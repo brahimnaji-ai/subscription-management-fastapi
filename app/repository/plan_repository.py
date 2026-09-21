@@ -1,6 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.models.enums import BillingPeriod
 from app.models.plan import Plan
 
 
@@ -10,13 +11,19 @@ class PlanRepository:
         db: Session,
         limit: int,
         offset: int,
+        active: bool | None = None,
+        billing_period: BillingPeriod | None = None,
     ) -> list[Plan]:
-        stmt = (
-            select(Plan)
-            .order_by(Plan.id)
-            .limit(limit)
-            .offset(offset)
-        )
+        stmt = select(Plan)
+
+        if active is not None:
+            stmt = stmt.where(Plan.active == active)
+
+        if billing_period is not None:
+            stmt = stmt.where(Plan.billing_period == billing_period)
+
+        stmt = stmt.order_by(Plan.id).limit(limit).offset(offset)
+
         return list(db.scalars(stmt))
 
     def find_by_name(self, db: Session, name: str) -> Plan | None:

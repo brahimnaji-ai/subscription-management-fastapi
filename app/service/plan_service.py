@@ -2,6 +2,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.exceptions.domain import PlanAlreadyExistsException, PlanNotFoundException
+from app.models.enums import BillingPeriod
 from app.models.plan import Plan
 from app.repository.plan_repository import PlanRepository
 from app.schemas.plan import PlanCreate, PlanUpdate
@@ -29,8 +30,16 @@ class PlanService:
         db: Session,
         limit: int,
         offset: int,
+        active: bool | None,
+        billing_period: BillingPeriod | None,
     ) -> list[Plan]:
-        return self.repository.find_all(db, limit, offset)
+        return self.repository.find_all(
+            db,
+            limit,
+            offset,
+            active,
+            billing_period,
+        )
 
     def find_by_id(self, db: Session, plan_id: int) -> Plan:
         plan = self.repository.find_by_id(db, plan_id)

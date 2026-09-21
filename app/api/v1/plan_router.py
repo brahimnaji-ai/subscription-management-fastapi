@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
+from app.models.enums import BillingPeriod
 from app.schemas.plan import PlanCreate, PlanResponse, PlanUpdate
 from app.service.plan_service import PlanService
 
@@ -28,9 +29,11 @@ def get_all(
         int,
         Query(ge=0, le=9_223_372_036_854_775_807),
     ] = 0,
+    active: bool | None = Query(default=None),
+    billing_period: BillingPeriod | None = Query(default=None),
     db: Session = Depends(get_db),
 ) -> list[PlanResponse]:
-    plans = service.find_all(db, limit, offset)
+    plans = service.find_all(db, limit, offset, active, billing_period)
     return [PlanResponse.model_validate(plan) for plan in plans]
 
 
