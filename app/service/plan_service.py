@@ -58,3 +58,9 @@ class PlanService:
             raise
 
         return plan
+
+    def deactivate_plan(self, db: Session, plan_id: int) -> None:
+        plan = self.find_by_id(db, plan_id)
+        plan.active = False
+        self.repository.save(db, plan)
+        db.commit()

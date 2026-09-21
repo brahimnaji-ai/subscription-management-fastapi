@@ -44,3 +44,11 @@ def update_plan(
 ) -> PlanResponse:
     plan = service.update_plan(db, plan_id, request)
     return PlanResponse.model_validate(plan)
+
+
+@router.delete("/{plan_id}", status_code=status.HTTP_204_NO_CONTENT)
+def deactivate_plan(
+    plan_id: int,
+    db: Session = Depends(get_db),
+) -> None:
+    service.deactivate_plan(db, plan_id)
