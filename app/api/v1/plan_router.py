@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, status
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
@@ -21,9 +23,14 @@ def create(
 
 @router.get("", response_model=list[PlanResponse])
 def get_all(
+    limit: Annotated[int, Query(ge=1, le=100)] = 20,
+    offset: Annotated[
+        int,
+        Query(ge=0, le=9_223_372_036_854_775_807),
+    ] = 0,
     db: Session = Depends(get_db),
-)-> list[PlanResponse]:
-    plans = service.find_all(db)
+) -> list[PlanResponse]:
+    plans = service.find_all(db, limit, offset)
     return [PlanResponse.model_validate(plan) for plan in plans]
 
 

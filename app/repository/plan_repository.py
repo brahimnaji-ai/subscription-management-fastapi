@@ -5,8 +5,19 @@ from app.models.plan import Plan
 
 
 class PlanRepository:
-    def find_all(self, db: Session) -> list[Plan]:
-        return list(db.scalars(select(Plan).order_by(Plan.id)))
+    def find_all(
+        self,
+        db: Session,
+        limit: int,
+        offset: int,
+    ) -> list[Plan]:
+        stmt = (
+            select(Plan)
+            .order_by(Plan.id)
+            .limit(limit)
+            .offset(offset)
+        )
+        return list(db.scalars(stmt))
 
     def find_by_name(self, db: Session, name: str) -> Plan | None:
         return db.scalar(select(Plan).where(Plan.name == name))

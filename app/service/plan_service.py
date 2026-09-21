@@ -24,8 +24,13 @@ class PlanService:
             raise PlanAlreadyExistsException(request.name) from None
         return plan
 
-    def find_all(self, db: Session) -> list[Plan]:
-        return self.repository.find_all(db)
+    def find_all(
+        self,
+        db: Session,
+        limit: int,
+        offset: int,
+    ) -> list[Plan]:
+        return self.repository.find_all(db, limit, offset)
 
     def find_by_id(self, db: Session, plan_id: int) -> Plan:
         plan = self.repository.find_by_id(db, plan_id)
