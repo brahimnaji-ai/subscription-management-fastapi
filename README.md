@@ -165,6 +165,8 @@ The plan collection is ordered by ascending plan ID and supports offset paginati
 - `limit` defaults to `20` and accepts values from `1` through `100`.
 - `offset` defaults to `0` and accepts non-negative PostgreSQL `bigint` values.
 - The response remains a JSON list of plan response objects.
+- `active` optionally filters plans by their active status.
+- `billing_period` optionally filters plans by `MONTHLY` or `YEARLY`.
 
 ## Development principles
 
