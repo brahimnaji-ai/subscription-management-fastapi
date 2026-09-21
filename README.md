@@ -160,6 +160,12 @@ The interactive API documentation is available at:
 | `PATCH` | `/api/v1/plans/{plan_id}` | Partially update a subscription plan |
 | `DELETE` | `/api/v1/plans/{plan_id}` | Deactivate a subscription plan |
 
+The plan collection is ordered by ascending plan ID and supports offset pagination:
+
+- `limit` defaults to `20` and accepts values from `1` through `100`.
+- `offset` defaults to `0` and accepts non-negative PostgreSQL `bigint` values.
+- The response remains a JSON list of plan response objects.
+
 ## Development principles
 
 - Version public endpoints under `/api/v1`.
