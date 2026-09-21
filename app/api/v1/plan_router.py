@@ -25,3 +25,12 @@ def get_all(
 )-> list[PlanResponse]:
     plans = service.find_all(db)
     return [PlanResponse.model_validate(plan) for plan in plans]
+
+
+@router.get("/{plan_id}", response_model=PlanResponse)
+def find_by_id(
+    plan_id: int,
+    db: Session = Depends(get_db),
+) -> PlanResponse:
+    plan = service.find_by_id(db, plan_id)
+    return PlanResponse.model_validate(plan)
