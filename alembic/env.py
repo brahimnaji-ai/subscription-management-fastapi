@@ -5,8 +5,11 @@ from sqlalchemy import engine_from_config, pool
 
 from app.db.base import Base
 from app.models.plan import Plan  # noqa: F401
+from app.core.config import settings
 
 config = context.config
+database_url = settings.database_url.render_as_string(hide_password=False)
+config.set_main_option("sqlalchemy.url", database_url.replace("%", "%%"))
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
