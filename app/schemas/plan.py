@@ -1,11 +1,14 @@
 from decimal import Decimal
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from app.models.enums import BillingPeriod
 
 
 class PlanCreate(BaseModel):
     name: str = Field(length=1, max_length=100)
     price: Decimal = Field(ge=0)
-    billing_period: str
+    billing_period: BillingPeriod
     max_api_calls: int = Field(gt=0)
 
 
@@ -19,7 +22,7 @@ class PlanResponse(BaseModel):
 class PlanUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=100)
     price: Decimal | None = Field(default=None, ge=0)
-    billing_period: str | None = None
+    billing_period: BillingPeriod | None = None
     max_api_calls: int | None = Field(default=None, gt=0)
     active: bool | None = None
 
