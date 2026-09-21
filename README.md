@@ -1,4 +1,15 @@
-# Subscription Management API
+<h1 align="center">Subscription Management API</h1>
+
+<p align="center">
+  <a href="https://www.python.org/"><img alt="Python 3.14" src="https://img.shields.io/badge/Python-3.14-3776AB?style=flat-square&amp;logo=python&amp;logoColor=white"></a>
+  <a href="https://fastapi.tiangolo.com/"><img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-009688?style=flat-square&amp;logo=fastapi&amp;logoColor=white"></a>
+  <a href="https://docs.astral.sh/uv/"><img alt="uv" src="https://img.shields.io/badge/uv-package%20manager-DE5FE9?style=flat-square"></a>
+  <a href="https://www.sqlalchemy.org/"><img alt="SQLAlchemy 2.x" src="https://img.shields.io/badge/SQLAlchemy-2.x-D71F00?style=flat-square"></a>
+  <a href="https://www.postgresql.org/"><img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&amp;logo=postgresql&amp;logoColor=white"></a>
+  <a href="https://www.psycopg.org/psycopg3/"><img alt="psycopg 3" src="https://img.shields.io/badge/psycopg-3-336791?style=flat-square"></a>
+  <a href="https://alembic.sqlalchemy.org/"><img alt="Alembic" src="https://img.shields.io/badge/Alembic-migrations-6BA81E?style=flat-square"></a>
+  <a href="https://docs.pydantic.dev/"><img alt="Pydantic" src="https://img.shields.io/badge/Pydantic-E92063?style=flat-square&amp;logo=pydantic&amp;logoColor=white"></a>
+</p>
 
 ## Purpose
 
