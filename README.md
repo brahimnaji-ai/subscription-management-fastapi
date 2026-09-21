@@ -25,6 +25,7 @@ Subscription Management API is a realistic FastAPI backend for learning Python a
 - psycopg
 - Alembic
 - Pydantic
+- Pydantic Settings
 - pytest when automated tests are introduced
 
 ## Architecture
@@ -55,10 +56,15 @@ This separation keeps persistence models from becoming the public API contract.
 |   |-- api/
 |   |   |-- v1/
 |   |   |   `-- plan_router.py
+|   |   |-- exception_handlers.py
 |   |   `-- router.py
+|   |-- core/
+|   |   `-- config.py
 |   |-- db/
 |   |   |-- base.py
 |   |   `-- database.py
+|   |-- exceptions/
+|   |   `-- domain.py
 |   |-- models/
 |   |   `-- plan.py
 |   |-- repository/
@@ -68,7 +74,9 @@ This separation keeps persistence models from becoming the public API contract.
 |   |-- service/
 |   |   `-- plan_service.py
 |   `-- main.py
+|-- .env.example
 |-- alembic.ini
+|-- docker-compose.yaml
 |-- pyproject.toml
 `-- uv.lock
 ```
@@ -105,12 +113,24 @@ For developers coming from Spring Boot, the following comparisons can be useful 
 
 ## Running locally
 
-The application expects PostgreSQL on `localhost:5432`, with a database named `subscriptions` and the development credentials configured in `app/db/database.py` and `alembic.ini`.
+Create the local environment file before starting the application:
+
+```shell
+cp .env.example .env
+```
+
+On PowerShell, use `Copy-Item .env.example .env` instead. Update the copied values when you need different PostgreSQL credentials, host, or port.
 
 Install dependencies from the lockfile:
 
 ```shell
 uv sync
+```
+
+Start PostgreSQL:
+
+```shell
+docker compose up -d
 ```
 
 Apply database migrations:
@@ -136,6 +156,7 @@ The interactive API documentation is available at:
 |---|---|---|
 | `POST` | `/api/v1/plans` | Create a subscription plan |
 | `GET` | `/api/v1/plans` | List subscription plans |
+| `GET` | `/api/v1/plans/{plan_id}` | Retrieve a subscription plan |
 
 ## Development principles
 
