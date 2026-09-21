@@ -158,6 +158,7 @@ The interactive API documentation is available at:
 | `GET` | `/api/v1/plans` | List subscription plans |
 | `GET` | `/api/v1/plans/{plan_id}` | Retrieve a subscription plan |
 | `PATCH` | `/api/v1/plans/{plan_id}` | Partially update a subscription plan |
+| `DELETE` | `/api/v1/plans/{plan_id}` | Deactivate a subscription plan |
 
 ## Development principles
 
