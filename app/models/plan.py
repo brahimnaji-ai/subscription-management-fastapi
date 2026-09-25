@@ -1,9 +1,16 @@
+from __future__ import annotations
+
 from decimal import Decimal
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Boolean, Enum, Numeric, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 from app.models.enums import BillingPeriod
+
+if TYPE_CHECKING:
+    from app.models.subscription import Subscription
 
 
 class Plan(Base):
@@ -22,3 +29,7 @@ class Plan(Base):
     )
     max_api_calls: Mapped[int] = mapped_column(nullable=False)
     active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+
+    subscriptions: Mapped[list[Subscription]] = relationship(
+        back_populates="plan",
+    )
