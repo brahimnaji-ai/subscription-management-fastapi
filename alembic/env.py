@@ -1,11 +1,11 @@
 from logging.config import fileConfig
 
-from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-from app.db.base import Base
-from app.models.plan import Plan  # noqa: F401
+from alembic import context
 from app.core.config import settings
+from app.db.base import Base
+import app.models  # noqa: F401 — register all models for autogenerate
 
 config = context.config
 database_url = settings.database_url.render_as_string(hide_password=False)
