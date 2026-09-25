@@ -16,6 +16,10 @@ class PlanResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    name: str
+    price: Decimal
+    billing_period: BillingPeriod
+    max_api_calls: int
     active: bool
 
 
