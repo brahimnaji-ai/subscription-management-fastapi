@@ -13,7 +13,11 @@ from app.exceptions.domain import (
 from app.models.enums import BillingPeriod, SubscriptionStatus
 from app.models.subscription import Subscription
 from app.repository.subscription_repository import SubscriptionRepository
-from app.schemas.subscription import PlanChangeRequest, SubscriptionCreate
+from app.schemas.subscription import (
+    CancellationRequest,
+    PlanChangeRequest,
+    SubscriptionCreate,
+)
 from app.service.customer_service import CustomerService
 from app.service.plan_service import PlanService
 
@@ -127,3 +131,37 @@ class SubscriptionService:
             raise
 
         return subscription
+
+    def cancel(
+        self,
+        db: Session,
+        subscription_id: int,
+        request: CancellationRequest,
+    ) -> Subscription:
+        # 1. Fetch the subscription; raise SubscriptionNotFoundException if missing
+        subscription = self.find_by_id(db, subscription_id)
+
+        # 2. Assert status is ACTIVE or TRIALING; raise InvalidSubscriptionStateException if already canceled or expired
+        allowed_statuses = [SubscriptionStatus.ACTIVE, SubscriptionStatus.TRIALING]
+        if subscription.status not in allowed_statuses:
+            raise InvalidSubscriptionStateException(
+                subscription.status, allowed_statuses
+            )
+
+        # 3. If immediate=True: set status = CANCELED
+        if request.immediate:
+            subscription.status = SubscriptionStatus.CANCELED
+        else:
+            # 4. If immediate=False: set cancel_at_period_end = True (status remains ACTIVE)
+            subscription.cancel_at_period_end = True
+
+        # 5. Persist and return
+        try:
+            self.repository.save(db, subscription)
+            db.commit()
+        except IntegrityError:
+            db.rollback()
+            raise
+
+        return subscription
+

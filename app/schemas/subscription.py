@@ -26,3 +26,7 @@ class SubscriptionResponse(BaseModel):
 
 class PlanChangeRequest(BaseModel):
     new_plan_id: int
+
+
+class CancellationRequest(BaseModel):
+    immediate: bool = False

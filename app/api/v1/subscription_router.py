@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.schemas.subscription import (
+    CancellationRequest,
     PlanChangeRequest,
     SubscriptionCreate,
     SubscriptionResponse,
@@ -51,4 +52,19 @@ def change_plan(
 ) -> SubscriptionResponse:
     subscription = service.change_plan(db, id, request)
     return SubscriptionResponse.model_validate(subscription)
+
+
+@router.post(
+    "/{id}/cancel",
+    response_model=SubscriptionResponse,
+)
+def cancel(
+    id: int,
+    request: CancellationRequest,
+    db: Annotated[Session, Depends(get_db)],
+) -> SubscriptionResponse:
+    subscription = service.cancel(db, id, request)
+    return SubscriptionResponse.model_validate(subscription)
+
+
 
