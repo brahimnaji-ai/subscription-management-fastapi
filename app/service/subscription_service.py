@@ -5,13 +5,15 @@ from sqlalchemy.orm import Session
 
 from app.exceptions.domain import (
     CustomerAlreadySubscribedException,
+    InvalidSubscriptionStateException,
     PlanInactiveException,
+    SamePlanChangeException,
     SubscriptionNotFoundException,
 )
 from app.models.enums import BillingPeriod, SubscriptionStatus
 from app.models.subscription import Subscription
 from app.repository.subscription_repository import SubscriptionRepository
-from app.schemas.subscription import SubscriptionCreate
+from app.schemas.subscription import PlanChangeRequest, SubscriptionCreate
 from app.service.customer_service import CustomerService
 from app.service.plan_service import PlanService
 
@@ -77,4 +79,51 @@ class SubscriptionService:
         subscription = self.repository.find_by_id(db, subscription_id)
         if subscription is None:
             raise SubscriptionNotFoundException(subscription_id)
+        return subscription
+
+    def change_plan(
+        self,
+        db: Session,
+        subscription_id: int,
+        request: PlanChangeRequest,
+    ) -> Subscription:
+        # 1. Fetch the subscription; raise SubscriptionNotFoundException if missing
+        subscription = self.find_by_id(db, subscription_id)
+
+        # 2. Assert status is ACTIVE or TRIALING; raise InvalidSubscriptionStateException otherwise
+        allowed_statuses = [SubscriptionStatus.ACTIVE, SubscriptionStatus.TRIALING]
+        if subscription.status not in allowed_statuses:
+            raise InvalidSubscriptionStateException(
+                subscription.status, allowed_statuses
+            )
+
+        # 3. Fetch and validate the new plan
+        new_plan = self.plan_service.find_by_id(db, request.new_plan_id)
+        if not new_plan.active:
+            raise PlanInactiveException(request.new_plan_id)
+
+        # 4. Guard against same-plan change
+        if subscription.plan_id == request.new_plan_id:
+            raise SamePlanChangeException(request.new_plan_id)
+
+        # 5. Update plan_id, reset period dates, persist
+        now = datetime.now(UTC)
+        period_days = 30 if new_plan.billing_period == BillingPeriod.MONTHLY else 365
+        current_period_start = now
+        current_period_end = current_period_start + timedelta(days=period_days)
+
+        subscription.plan_id = new_plan.id
+        subscription.plan = new_plan
+        subscription.status = SubscriptionStatus.ACTIVE
+        subscription.cancel_at_period_end = False
+        subscription.current_period_start = current_period_start
+        subscription.current_period_end = current_period_end
+
+        try:
+            self.repository.save(db, subscription)
+            db.commit()
+        except IntegrityError:
+            db.rollback()
+            raise
+
         return subscription

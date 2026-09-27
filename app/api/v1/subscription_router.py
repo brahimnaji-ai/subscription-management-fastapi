@@ -4,7 +4,11 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
-from app.schemas.subscription import SubscriptionCreate, SubscriptionResponse
+from app.schemas.subscription import (
+    PlanChangeRequest,
+    SubscriptionCreate,
+    SubscriptionResponse,
+)
 from app.service.subscription_service import SubscriptionService
 
 router = APIRouter(prefix="/subscriptions")
@@ -34,3 +38,17 @@ def find_by_id(
 ) -> SubscriptionResponse:
     subscription = service.find_by_id(db, subscription_id)
     return SubscriptionResponse.model_validate(subscription)
+
+
+@router.put(
+    "/{id}/plan",
+    response_model=SubscriptionResponse,
+)
+def change_plan(
+    id: int,
+    request: PlanChangeRequest,
+    db: Annotated[Session, Depends(get_db)],
+) -> SubscriptionResponse:
+    subscription = service.change_plan(db, id, request)
+    return SubscriptionResponse.model_validate(subscription)
+

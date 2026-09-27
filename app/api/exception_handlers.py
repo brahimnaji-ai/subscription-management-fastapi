@@ -5,9 +5,11 @@ from app.exceptions.domain import (
     CustomerAlreadyExistsException,
     CustomerAlreadySubscribedException,
     CustomerNotFoundException,
+    InvalidSubscriptionStateException,
     PlanAlreadyExistsException,
     PlanInactiveException,
     PlanNotFoundException,
+    SamePlanChangeException,
     SubscriptionNotFoundException,
 )
 
@@ -82,3 +84,24 @@ def register_exception_handlers(app: FastAPI) -> None:
             status_code=status.HTTP_404_NOT_FOUND,
             content={"detail": str(exc)},
         )
+
+    @app.exception_handler(InvalidSubscriptionStateException)
+    async def handle_invalid_subscription_state(
+        request: Request,
+        exc: InvalidSubscriptionStateException,
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content={"detail": str(exc)},
+        )
+
+    @app.exception_handler(SamePlanChangeException)
+    async def handle_same_plan_change(
+        request: Request,
+        exc: SamePlanChangeException,
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content={"detail": str(exc)},
+        )
+
