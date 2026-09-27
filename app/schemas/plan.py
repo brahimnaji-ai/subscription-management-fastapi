@@ -6,10 +6,11 @@ from app.models.enums import BillingPeriod
 
 
 class PlanCreate(BaseModel):
-    name: str = Field(length=1, max_length=100)
+    name: str = Field(min_length=1, max_length=100)
     price: Decimal = Field(ge=0)
     billing_period: BillingPeriod
     max_api_calls: int = Field(gt=0)
+    trial_days: int = Field(default=0, ge=0)
 
 
 class PlanResponse(BaseModel):
@@ -20,6 +21,7 @@ class PlanResponse(BaseModel):
     price: Decimal
     billing_period: BillingPeriod
     max_api_calls: int
+    trial_days: int
     active: bool
 
 
@@ -28,6 +30,7 @@ class PlanUpdate(BaseModel):
     price: Decimal | None = Field(default=None, ge=0)
     billing_period: BillingPeriod | None = None
     max_api_calls: int | None = Field(default=None, gt=0)
+    trial_days: int | None = Field(default=None, ge=0)
     active: bool | None = None
 
     @field_validator("*", mode="before")
