@@ -31,6 +31,12 @@ class Subscription(Base):
         index=True,
     )
 
+    # Valid transitions:
+    #   TRIALING -> ACTIVE | CANCELED | EXPIRED
+    #   ACTIVE   -> PAST_DUE | CANCELED | EXPIRED
+    #   PAST_DUE -> ACTIVE | CANCELED | EXPIRED
+    #   CANCELED -> (terminal)
+    #   EXPIRED  -> (terminal)
     status: Mapped[SubscriptionStatus] = mapped_column(
         Enum(
             SubscriptionStatus,
@@ -40,6 +46,7 @@ class Subscription(Base):
         nullable=False,
         default=SubscriptionStatus.ACTIVE,
     )
+
 
     started_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
