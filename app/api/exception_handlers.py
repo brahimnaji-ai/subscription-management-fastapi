@@ -3,9 +3,12 @@ from fastapi.responses import JSONResponse
 
 from app.exceptions.domain import (
     CustomerAlreadyExistsException,
+    CustomerAlreadySubscribedException,
     CustomerNotFoundException,
     PlanAlreadyExistsException,
+    PlanInactiveException,
     PlanNotFoundException,
+    SubscriptionNotFoundException,
 )
 
 
@@ -30,11 +33,20 @@ def register_exception_handlers(app: FastAPI) -> None:
             content={"detail": str(exc)},
         )
 
+    @app.exception_handler(PlanInactiveException)
+    async def handle_plan_inactive(
+        request: Request,
+        exc: PlanInactiveException,
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content={"detail": str(exc)},
+        )
 
     @app.exception_handler(CustomerAlreadyExistsException)
     async def handle_customer_already_exists(
-            request: Request,
-            exc: CustomerAlreadyExistsException,
+        request: Request,
+        exc: CustomerAlreadyExistsException,
     ) -> JSONResponse:
         return JSONResponse(
             status_code=status.HTTP_409_CONFLICT,
@@ -43,8 +55,28 @@ def register_exception_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(CustomerNotFoundException)
     async def handle_customer_not_found(
-            request: Request,
-            exc: CustomerNotFoundException ,
+        request: Request,
+        exc: CustomerNotFoundException,
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"detail": str(exc)},
+        )
+
+    @app.exception_handler(CustomerAlreadySubscribedException)
+    async def handle_customer_already_subscribed(
+        request: Request,
+        exc: CustomerAlreadySubscribedException,
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content={"detail": str(exc)},
+        )
+
+    @app.exception_handler(SubscriptionNotFoundException)
+    async def handle_subscription_not_found(
+        request: Request,
+        exc: SubscriptionNotFoundException,
     ) -> JSONResponse:
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
